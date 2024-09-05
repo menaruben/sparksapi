@@ -1,5 +1,5 @@
 # sparksapi⚡
-A (work in progress) League of Legends API for stats and analytics
+A (work in progress) League of Legends API for individual champion, item and runes stats/analytics
 > ⚠️ This repository is a work in progress. I am also working on a web application using this api which will be published in another repo in the future.
 
 If you have any suggestions for refactoring, features etc. please open an issue. :)
