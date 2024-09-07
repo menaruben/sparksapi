@@ -14,7 +14,7 @@ public sealed class SummonerController(
     private ILogger<SummonerController> Logger => logger;
     private SummonerApiClient SummonerApiClient => summonerApiClient;
 
-    [HttpGet("summoner", Name = "GetSummoner")]
+    [HttpGet(Name = "GetSummoner")]
     public Summoner GetSummoner(string puuid, string region)
     {
         var actualRegion = ApiHelper.ParseRegion(region);
