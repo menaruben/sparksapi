@@ -15,7 +15,7 @@ You will find the DTOs documented below the endpoint docs.
 ### GET: `/Account/accountFromRiotId`
 Returns an `Account` based on the given Riot ID and region.
 
-Parameters:
+**Parameters**:
 - string: name
 - string: tagline
 - string: region
@@ -23,7 +23,7 @@ Parameters:
 ### GET: `/Account/GetAccountFromPuuid`
 Returns an `Account` based on the given puuid and region.
 
-Parameters:
+**Parameters**:
 - string: puuid
 - string: region
 
@@ -31,7 +31,7 @@ Parameters:
 ### GET: `/ChampionAnalyzer`
 Returns a collection of `ChampionAnalytic` based on puuid, region, matchCount and skip.
 
-Parameters:
+**Parameters**:
 - string:       puuid
 - string:       region
 - int:          matchCount  (amount of matches to be fetched)
@@ -41,7 +41,7 @@ Parameters:
 ### GET: `/ItemAnalyzer`
 Returns a collection of `ItemAnalytic` based on puuid, region, matchCount and skip.
 
-Parameters:
+**Parameters**:
 - string:       puuid
 - string:       region
 - int:          matchCount  (amount of matches to be fetched)
@@ -51,7 +51,7 @@ Parameters:
 ### GET: `/Match/matchIds`
 Returns a collection of `string` (matchIds) based on puuid, region, matchCount and skip.
 
-Parameters:
+**Parameters**:
 - string:       puuid
 - string:       region
 - int:          matchCount  (amount of matches to be fetched)
@@ -68,7 +68,7 @@ Example Response:
 ### GET: `/Match/matchesFromPuuid`
 Returns a collection of `Match` based on puuid, region, matchCount and skip.
 
-Parameters:
+**Parameters**:
 - string:       puuid
 - string:       region
 - int:          matchCount  (amount of matches to be fetched, default: 10)
@@ -77,7 +77,7 @@ Parameters:
 ### POST: `/Match/matchesFromIds`
 Returns a collection of `Match` based on given matchIds and region:
 
-Parameters:
+**Parameters**:
 - string:       region
 
 Request Body Example:
@@ -91,7 +91,7 @@ Request Body Example:
 ### GET: `/Match/matchHistory`
 Returns a collection of `MatchParticipation` based on puuid, region, matchCount and skip.
 
-Parameters:
+**Parameters**:
 - string:       puuid
 - string:       region
 - int:          matchCount  (amount of matches to be fetched, default: 10)
@@ -101,7 +101,7 @@ Parameters:
 ### GET: `/RuneAnalyzer`
 Returns a collection of `RuneTreeAnalytic` based on puuid, region, matchCount and skip.
 
-Parameters:
+**Parameters**:
 - string:       puuid
 - string:       region
 - int:          matchCount  (amount of matches to be fetched, default: 10)
@@ -111,7 +111,7 @@ Parameters:
 ### GET: `/Summoner`
 Returns a `Summoner` based on puuid and region.
 
-Parameters:
+****Parameters****:
 - string:       puuid
 - string:       region
 
