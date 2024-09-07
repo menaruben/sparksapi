@@ -13,15 +13,11 @@ namespace SparksApi.Controllers;
 public sealed class ChampionAnalyzerController(
     ILogger<ChampionAnalyzerController> logger,
     MatchApiClient matchApiClient,
-    ItemApiClient itemApiClient,
-    RunesApiClient runesApiClient,
     ChampionAnalyzer championAnalyzer
     ) : ControllerBase
 {
     private ILogger<ChampionAnalyzerController> Logger => logger;
     private IMatchApiClient MatchApiClient => matchApiClient;
-    private IItemApiClient ItemApiClient => itemApiClient;
-    private IRunesApiClient RunesApiClient => runesApiClient;
     private ChampionAnalyzer ChampionAnalyzer => championAnalyzer;
 
 
