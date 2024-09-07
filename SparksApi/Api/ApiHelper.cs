@@ -2,38 +2,39 @@
 
 namespace SparksApi.Api;
 
-public sealed class ApiHelper {
+public sealed class ApiHelper
+{
     public static readonly string DdragonBaseUrl = "https://ddragon.leagueoflegends.com/cdn";
     public static readonly string CdragonBaseUrl = "https://raw.communitydragon.org/latest";
-    
-    private readonly JsonSerializerOptions _options = new ()
+
+    public static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         IgnoreReadOnlyFields = true
     };
 
-    public async Task<T> MapResponse<T>(HttpResponseMessage response)
-    {
-        if (response.IsSuccessStatusCode)
-        {
-            var json = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<T>(json, _options);
+    // public static async Task<T> MapResponse<T>(HttpResponseMessage response)
+    // {
+    //     if (response.IsSuccessStatusCode)
+    //     {
+    //         var json = await response.Content.ReadAsStringAsync();
+    //         var result = JsonSerializer.Deserialize<T>(json, Options);
+    //
+    //         if (result is null)
+    //         {
+    //             throw new Exception("Failed to deserialize response");
+    //         }
+    //
+    //         return result;
+    //     }
+    //
+    //     throw new Exception($"Failed to get response: {response.StatusCode}");
+    // }
 
-            if (result is null)
-            {
-                throw new Exception("Failed to deserialize response");
-            }
-
-            return result;
-        }
-
-        throw new Exception($"Failed to get response: {response.StatusCode}");
-    }
-
-    public string GetApiKey() =>
+    public static string GetApiKey() =>
         Environment.GetEnvironmentVariable("RIOT_API_KEY") ?? throw new Exception("API_KEY not found");
 
-    public string GetRiotBaseUrlBasedOnRegion(Region region) => region switch
+    public static string GetRiotBaseUrlBasedOnRegion(Region region) => region switch
     {
         Region.Na => "https://americas.api.riotgames.com",
         Region.Euw => "https://europe.api.riotgames.com",
@@ -55,7 +56,7 @@ public sealed class ApiHelper {
         _ => throw new Exception("Region not found")
     };
 
-    public string GetRiotSummonerBaseUrl(Region region) => region switch
+    public static string GetRiotSummonerBaseUrl(Region region) => region switch
     {
         Region.Na => "https://na1.api.riotgames.com",
         Region.Euw => "https://euw1.api.riotgames.com",
@@ -77,13 +78,13 @@ public sealed class ApiHelper {
         _ => throw new Exception("Region not found")
     };
 
-    public string GetLatestVersion()
+    public static string GetLatestVersion()
     {
         var url = "https://ddragon.leagueoflegends.com/api/versions.json";
         var client = new HttpClient();
         var response = client.GetAsync(url).Result;
         var json = response.Content.ReadAsStringAsync().Result;
-        var versions = JsonSerializer.Deserialize<List<string>>(json, _options);
+        var versions = JsonSerializer.Deserialize<List<string>>(json, JsonOptions);
         return versions.First() ?? throw new Exception("Failed to get latest version");
     }
 

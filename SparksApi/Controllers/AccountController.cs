@@ -6,10 +6,7 @@ namespace SparksApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public sealed class AccountController(
-    ILogger<AccountController> logger,
-    AccountApiClient accountApiClient
-    ) : ControllerBase
+public sealed class AccountController(ILogger<AccountController> logger, AccountApiClient accountApiClient) : ControllerBase
 {
     private ILogger<AccountController> Logger => logger;
     private AccountApiClient AccountApi => accountApiClient;

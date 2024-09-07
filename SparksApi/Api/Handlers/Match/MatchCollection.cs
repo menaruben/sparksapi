@@ -14,7 +14,7 @@ public sealed class MatchCollection : IEnumerable<Match>
 
     private MatchCollection(IEnumerable<Match> matches) =>
         _matches = matches;
-    
+
     public static MatchCollection From(IEnumerable<Match> matches) => new(matches);
 
     public static MatchCollection Empty() => new();

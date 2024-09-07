@@ -1,19 +1,24 @@
 ﻿using SparksApi.Api.Models;
+using System.Text.Json;
 
 namespace SparksApi.Api.Handlers.Summoner;
 
-public sealed class SummonerApiClient : ISummonerApiClient {
-    private readonly HttpClient _client = new ();
-    private readonly ApiHelper _apiHelper = new ();
+public sealed class SummonerApiClient : ISummonerApiClient
+{
+    private readonly HttpClient _client = new();
     private readonly string _profileIconBaseUrl;
-    
+
     public SummonerApiClient() =>
         _profileIconBaseUrl = ApiHelper.CdragonBaseUrl + "/game/assets/ux/summonericons/profileicon";
-    
-    public Summoner GetSummoner(string puuid, Region region) {
-        var url = $"{_apiHelper.GetRiotSummonerBaseUrl(region)}/lol/summoner/v4/summoners/by-puuid/{puuid}?api_key={_apiHelper.GetApiKey()}";
+
+    public Summoner GetSummoner(string puuid, Region region)
+    {
+        var url = $"{ApiHelper.GetRiotSummonerBaseUrl(region)}/lol/summoner/v4/summoners/by-puuid/{puuid}" +
+                  $"?api_key={ApiHelper.GetApiKey()}";
         var response = _client.GetAsync(url);
-        var summonerDto = _apiHelper.MapResponse<SummonerDto>(response.Result).Result;
+        var json = response.Result.Content.ReadAsStringAsync();
+        var summonerDto = JsonSerializer.Deserialize<SummonerDto>(json.Result, ApiHelper.JsonOptions);
+        if (summonerDto is null) throw new Exception("Couldn't deserialize summoner");
         return new(
             summonerDto.AccountId,
             GetProfileIconUrl(summonerDto.ProfileIconId),
@@ -23,7 +28,7 @@ public sealed class SummonerApiClient : ISummonerApiClient {
             summonerDto.SummonerLevel
         );
     }
-    
+
     private string GetProfileIconUrl(int profileIconId) =>
         $"{_profileIconBaseUrl}{profileIconId}.png";
 }

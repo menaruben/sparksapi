@@ -2,6 +2,7 @@
 
 namespace SparksApi.Api.Handlers.Runes;
 
-public interface IRunesApiClient {
+public interface IRunesApiClient
+{
     IEnumerable<Rune> GetRunesFromPerks(Perks perks);
 }

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Concurrent;
+using System.Text.Json;
 
 namespace SparksApi.Api.Handlers.Account;
 
 public sealed class AccountApiClient : IAccountApiClient
 {
     private readonly HttpClient _client = new();
-    private readonly ApiHelper _apiHelper = new();
     private readonly ConcurrentDictionary<string, Account> _accountCache = new();
 
     public async Task<String> GetPuuid(string gameName, string tagLine, Region region)
@@ -13,9 +13,12 @@ public sealed class AccountApiClient : IAccountApiClient
         var puuid = GetPuuidFromCache(gameName, tagLine, region);
         if (puuid != null) return puuid;
 
-        var url = $"{_apiHelper.GetRiotBaseUrlBasedOnRegion(region)}/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}?api_key={_apiHelper.GetApiKey()}";
+        var url = $"{ApiHelper.GetRiotBaseUrlBasedOnRegion(region)}/riot/account/v1/accounts/by-riot-id/{gameName}/" +
+                  $"{tagLine}?api_key={ApiHelper.GetApiKey()}";
         var response = await _client.GetAsync(url);
-        var account = await _apiHelper.MapResponse<Account>(response);
+        var json = await response.Content.ReadAsStringAsync();
+        var account = JsonSerializer.Deserialize<Account>(json, ApiHelper.JsonOptions);
+        if (account is null) throw new Exception("Account not found");
         StoreAccountInCache(account with { Region = region });
         return account.Puuid;
     }
@@ -23,11 +26,14 @@ public sealed class AccountApiClient : IAccountApiClient
     public async Task<Account> GetAccount(string puuid, Region region)
     {
         var account = GetAccountFromCache(puuid);
-        if (account != null) return account;
+        if (account is not null) return account;
 
-        var url = $"{_apiHelper.GetRiotBaseUrlBasedOnRegion(region)}/riot/account/v1/accounts/by-puuid/{puuid}?api_key={_apiHelper.GetApiKey()}";
+        var url = $"{ApiHelper.GetRiotBaseUrlBasedOnRegion(region)}/riot/account/v1/accounts/by-puuid/{puuid}" +
+                  $"?api_key={ApiHelper.GetApiKey()}";
         var response = await _client.GetAsync(url);
-        var accountNoRegion = await _apiHelper.MapResponse<Account>(response);
+        var json = await response.Content.ReadAsStringAsync();
+        var accountNoRegion = JsonSerializer.Deserialize<Account>(json, ApiHelper.JsonOptions);
+        if (accountNoRegion == null) throw new Exception("Account not found");
         account = accountNoRegion with { Region = region };
         StoreAccountInCache(account with { Region = region });
         return account;
@@ -38,9 +44,12 @@ public sealed class AccountApiClient : IAccountApiClient
         var account = GetAccountFromCache(gameName, tagLine, region);
         if (account != null) return account;
 
-        var url = $"{_apiHelper.GetRiotBaseUrlBasedOnRegion(region)}/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}?api_key={_apiHelper.GetApiKey()}";
+        var url = $"{ApiHelper.GetRiotBaseUrlBasedOnRegion(region)}/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}" +
+                  $"?api_key={ApiHelper.GetApiKey()}";
         var response = await _client.GetAsync(url);
-        var accountNoRegion = await _apiHelper.MapResponse<Account>(response);
+        var json = await response.Content.ReadAsStringAsync();
+        var accountNoRegion = JsonSerializer.Deserialize<Account>(json, ApiHelper.JsonOptions);
+        if (accountNoRegion is null) throw new Exception("Account not found");
         StoreAccountInCache(accountNoRegion with { Region = region });
         return accountNoRegion with { Region = region };
     }

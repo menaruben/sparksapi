@@ -9,7 +9,7 @@ namespace SparksApi.Controllers;
 public sealed class MatchController(ILogger<MatchController> logger, MatchApiClient matchApiClient) : ControllerBase
 {
     private ILogger<MatchController> Logger => logger;
-    private MatchApiClient MatchApiClient => matchApiClient;
+    private IMatchApiClient MatchApiClient => matchApiClient;
 
     [HttpGet("matchIds", Name = "GetMatchIds")]
     public IEnumerable<string> GetMatchIds(string puuid, string region, int matchCount = 10, int skip = 0)
@@ -34,7 +34,7 @@ public sealed class MatchController(ILogger<MatchController> logger, MatchApiCli
     }
 
     [HttpPost("matchesFromIds", Name = "GetMatchesFromIds")]
-    public MatchCollection GetMatchesFromIds([FromBody] IEnumerable<string> matchIds, string region) 
+    public MatchCollection GetMatchesFromIds([FromBody] IEnumerable<string> matchIds, string region)
     {
         var actualRegion = ApiHelper.ParseRegion(region);
         Logger.LogInformation($"Getting matches from {string.Join(", ", matchIds)} in {actualRegion}");
@@ -45,12 +45,12 @@ public sealed class MatchController(ILogger<MatchController> logger, MatchApiCli
 
 
     [HttpGet("matchHistory", Name = "GetMatchHistory")]
-    public MatchHistory GetMatchHistory(string puuid, string region, int matchCount = 10, int skip = 0) 
+    public MatchHistory GetMatchHistory(string puuid, string region, int matchCount = 10, int skip = 0)
     {
         var actualRegion = ApiHelper.ParseRegion(region);
         Logger.LogInformation($"Getting match history ({matchCount} matches) for {puuid} in {actualRegion} starting from {skip}");
-        var matches = MatchHistory.AddRange(MatchApiClient.GetMatchParticipations(puuid, actualRegion, matchCount, skip).Result);
+        var matchHistory = MatchHistory.From(MatchApiClient.GetMatchParticipations(puuid, actualRegion, matchCount, skip).Result);
         Logger.LogInformation("Got match history successfully");
-        return matches;
+        return matchHistory;
     }
 }

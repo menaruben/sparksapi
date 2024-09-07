@@ -5,7 +5,6 @@ using SparksApi.Api;
 using SparksApi.Api.Handlers.Item;
 using SparksApi.Api.Handlers.Match;
 using SparksApi.Api.Handlers.Runes;
-using SparksApi.Extensions;
 
 namespace SparksApi.Controllers;
 
@@ -17,8 +16,7 @@ public sealed class ChampionAnalyzerController(
     ItemApiClient itemApiClient,
     RunesApiClient runesApiClient,
     ChampionAnalyzer championAnalyzer
-
-) : ControllerBase
+    ) : ControllerBase
 {
     private ILogger<ChampionAnalyzerController> Logger => logger;
     private IMatchApiClient MatchApiClient => matchApiClient;
@@ -33,13 +31,9 @@ public sealed class ChampionAnalyzerController(
         Logger.LogInformation($"Getting champion analytics for {puuid} in {region} with {matchCount} matches starting from {skip}");
         var actualRegion = ApiHelper.ParseRegion(region);
         Logger.LogInformation($"Getting {matchCount} matches for {puuid} in {actualRegion} starting from {skip}");
-        var matchIds = MatchApiClient.GetMatchIds(puuid, actualRegion, matchCount, skip).Result;
-        Logger.LogInformation($"Got following match ids: {string.Join(", ", matchIds)}");
-        var matches = MatchApiClient.GetMatchesFromIds(matchIds, actualRegion).Result;
-        Logger.LogInformation("Got matches from ids successfully");
-        var participations = matches.GetParticipations(puuid, ItemApiClient, RunesApiClient);
+        var participations = MatchApiClient.GetMatchParticipations(puuid, actualRegion, matchCount, skip);
         Logger.LogInformation("Got participations successfully from matches");
-        var result = ChampionAnalyzer.Analyze(participations);
+        var result = ChampionAnalyzer.Analyze(participations.Result);
         Logger.LogInformation("Got champion analytics successfully");
         return result;
     }

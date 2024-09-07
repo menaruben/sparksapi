@@ -80,7 +80,7 @@ public sealed class RunesApiClient : IRunesApiClient
             {8136, new (8136, "Zombie Ward", "After killing an enemy ward, a friendly Zombie Ward is raised in its place. Gain permanent AD or AP for each Zombie Ward spawned plus bonus upon completion.", "Domination",
                 $"{_baseIconUrl}/domination/zombieward/zombieward.png")},
 
-            {8120, new (8120, "Ghost Poro", 
+            {8120, new (8120, "Ghost Poro",
                 "When your wards expire, they leave behind a Ghost Poro. The Ghost Poro grants vision until discovered. Gain permanent AD or AP, adaptive for each Ghost Poro and when your Ghost Poro spots an enemy champion, plus bonus upon completion.",
                 "Domination",
                 $"{_baseIconUrl}/domination/ghostporo/ghostporo.png")},
@@ -222,6 +222,6 @@ public sealed class RunesApiClient : IRunesApiClient
             .Select(selection => GetRune(selection.Perk))
             .Where(rune => rune != null)
             .Select(rune => rune!);
-    
+
     private Rune? GetRune(int id) => _runeCache.GetValueOrDefault(id);
 }

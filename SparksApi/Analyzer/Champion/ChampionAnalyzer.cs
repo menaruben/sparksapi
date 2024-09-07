@@ -17,7 +17,7 @@ public sealed class ChampionAnalyzer : IAnalyzer<ChampionAnalytic>
             var winrate = (float)gamesWonWithChamp / gamesPlayedWithChamp.Count();
             var pickrate = (float)gamesPlayedWithChamp.Count() / participations.Count();
 
-            championAnalytics.Add(new (
+            championAnalytics.Add(new(
                 ChampionName: champ,
                 WinRate: winrate,
                 PickRate: pickrate,

@@ -1,14 +1,14 @@
 ﻿using SparksApi.Api.Models;
 using System.Collections.Concurrent;
+using System.Text.Json;
 
 namespace SparksApi.Api.Handlers.Item;
 
 public sealed class ItemApiClient : IItemApiClient
 {
     private readonly HttpClient _client = new();
-    private readonly ApiHelper _apiHelper = new();
     private readonly ConcurrentDictionary<int, Item> _itemCache = new();
-    public static int EMPTY_ITEM_SLOT_ID = 0;
+    public static readonly int EmptyItemSlotId = 0;
 
     public ItemApiClient() { LoadItems(); }
 
@@ -18,14 +18,16 @@ public sealed class ItemApiClient : IItemApiClient
             : throw new Exception($"Item with id {itemId} not found");
 
     private string GetItemIconUrl(int itemId) =>
-        $"{ApiHelper.DdragonBaseUrl}/{_apiHelper.GetLatestVersion()}" +
+        $"{ApiHelper.DdragonBaseUrl}/{ApiHelper.GetLatestVersion()}" +
         $"/img/item/{itemId}.png";
 
     private void LoadItems()
     {
         var url = $"{ApiHelper.CdragonBaseUrl}/plugins/rcp-be-lol-game-data/global/en_gb/v1/items.json";
         var response = _client.GetAsync(url).Result;
-        var items = _apiHelper.MapResponse<IEnumerable<ItemDto>>(response).Result;
+        var json = response.Content.ReadAsStringAsync().Result;
+        var items = JsonSerializer.Deserialize<IEnumerable<ItemDto>>(json, ApiHelper.JsonOptions);
+        if (items is null) throw new Exception("Could not load items");
         Parallel.ForEach(items, item =>
         {
             _itemCache[item.Id] = new Item(

@@ -4,9 +4,10 @@ using SparksApi.Api.Handlers.Runes;
 
 namespace SparksApi.Extensions;
 
-public static class MatchExtension {
+public static class MatchExtension
+{
     public static MatchParticipation ToParticipation(
-        this Match match, string puuid, IItemApiClient itemApiClient, IRunesApiClient runesApiClient) 
+        this Match match, string puuid, IItemApiClient itemApiClient, IRunesApiClient runesApiClient)
     {
         var participant = match.Participants.Single(p => p.Puuid == puuid);
         return new MatchParticipation(
@@ -23,17 +24,17 @@ public static class MatchExtension {
             runesApiClient.GetRunesFromPerks(participant.Perks)
         );
     }
-    
-    private static IEnumerable<Item> GetItems(this Match match, string puuid, IItemApiClient itemApiClient) 
+
+    private static IEnumerable<Item> GetItems(this Match match, string puuid, IItemApiClient itemApiClient)
     {
         var participant = match.Participants.Single(p => p.Puuid == puuid);
         var itemIds = new[]
         {
-            participant.Item0, participant.Item1, participant.Item2, 
+            participant.Item0, participant.Item1, participant.Item2,
             participant.Item3, participant.Item4, participant.Item5
         };
         return itemIds
-            .Where(i => i != ItemApiClient.EMPTY_ITEM_SLOT_ID)
+            .Where(i => i != ItemApiClient.EmptyItemSlotId)
             .Select(itemApiClient.GetItem)
             .DistinctBy(i => i.Id)
             .Where(i => i != null);
