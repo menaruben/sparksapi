@@ -36,7 +36,7 @@ public static class MatchExtension
         return itemIds
             .Where(i => i != ItemApiClient.EmptyItemSlotId)
             .Select(itemApiClient.GetItem)
-            .DistinctBy(i => i.Id)
-            .Where(i => i != null);
+            .Where(i => i != null)
+            .DistinctBy(i => i!.Id)!;
     }
 }

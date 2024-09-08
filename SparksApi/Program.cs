@@ -22,20 +22,20 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader());
 });
 
-builder.Services.AddScoped<ItemApiClient>();
-builder.Services.AddScoped<MatchApiClient>();
-builder.Services.AddScoped<RunesApiClient>();
-builder.Services.AddScoped<SummonerApiClient>();
-builder.Services.AddScoped<AccountApiClient>();
-builder.Services.AddScoped<ItemAnalyzer>();
-builder.Services.AddScoped<ChampionAnalyzer>();
-builder.Services.AddScoped<RuneAnalyzer>();
-builder.Services.AddScoped<ItemAnalyzerController>();
-builder.Services.AddScoped<MatchController>();
-builder.Services.AddScoped<ChampionAnalyzerController>();
-builder.Services.AddScoped<AccountController>();
-builder.Services.AddScoped<SummonerController>();
-builder.Services.AddScoped<RuneAnalyzerController>();
+builder.Services.AddSingleton<ItemApiClient>();
+builder.Services.AddSingleton<MatchApiClient>();
+builder.Services.AddSingleton<RunesApiClient>();
+builder.Services.AddSingleton<SummonerApiClient>();
+builder.Services.AddSingleton<AccountApiClient>();
+builder.Services.AddSingleton<ItemAnalyzer>();
+builder.Services.AddSingleton<ChampionAnalyzer>();
+builder.Services.AddSingleton<RuneAnalyzer>();
+builder.Services.AddSingleton<ItemAnalyzerController>();
+builder.Services.AddSingleton<MatchController>();
+builder.Services.AddSingleton<ChampionAnalyzerController>();
+builder.Services.AddSingleton<AccountController>();
+builder.Services.AddSingleton<SummonerController>();
+builder.Services.AddSingleton<RuneAnalyzerController>();
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())

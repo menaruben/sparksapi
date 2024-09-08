@@ -85,6 +85,7 @@ public sealed class ApiHelper
         var response = client.GetAsync(url).Result;
         var json = response.Content.ReadAsStringAsync().Result;
         var versions = JsonSerializer.Deserialize<List<string>>(json, JsonOptions);
+        if (versions is null) throw new Exception("Failed to get versions");
         return versions.First() ?? throw new Exception("Failed to get latest version");
     }
 
