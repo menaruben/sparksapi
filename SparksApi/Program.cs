@@ -1,6 +1,7 @@
 using SparksApi.Analyzer.Champion;
 using SparksApi.Analyzer.Item;
 using SparksApi.Analyzer.Rune;
+using SparksApi.Api.Caches;
 using SparksApi.Api.Handlers.Account;
 using SparksApi.Api.Handlers.Item;
 using SparksApi.Api.Handlers.Match;
@@ -22,6 +23,12 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader());
 });
 
+// caches
+builder.Services.AddSingleton<MatchCache>();
+builder.Services.AddSingleton<ItemCache>();
+builder.Services.AddSingleton<RuneCache>();
+
+// handlers
 builder.Services.AddSingleton<ItemApiClient>();
 builder.Services.AddSingleton<MatchApiClient>();
 builder.Services.AddSingleton<RunesApiClient>();

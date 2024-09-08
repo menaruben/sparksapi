@@ -2,17 +2,20 @@
 using SparksApi.Api.Handlers.Runes;
 using SparksApi.Api.Models;
 using SparksApi.Extensions;
-using System.Collections.Concurrent;
 using System.Text.Json;
 
 namespace SparksApi.Api.Handlers.Match;
 
-public sealed class MatchApiClient(ItemApiClient itemApiClient, RunesApiClient runesApiClient) : IMatchApiClient
+public sealed class MatchApiClient(
+    ItemApiClient itemApiClient,
+    RunesApiClient runesApiClient,
+    MatchCache matchDatabase
+    ) : IMatchApiClient
 {
     private readonly HttpClient _client = new();
     private IItemApiClient ItemApiClient => itemApiClient;
     private IRunesApiClient RunesApiClient => runesApiClient;
-    private readonly ConcurrentDictionary<string, Match> _matchCache = new();
+    private MatchCache MatchDatabase => matchDatabase;
 
     public async Task<MatchCollection> GetMatchesFromIds(IEnumerable<String> matchIds, Region region) =>
         MatchCollection.From(await Task.WhenAll(matchIds.Select(matchId => GetMatch(matchId, region))));
@@ -39,8 +42,10 @@ public sealed class MatchApiClient(ItemApiClient itemApiClient, RunesApiClient r
 
     private async Task<Match> GetMatch(string matchId, Region region)
     {
-        if (_matchCache.TryGetValue(matchId, out var maybeMatch)) return maybeMatch;
-
+        // if (_matchCache.TryGetValue(matchId, out var maybeMatch)) return maybeMatch;
+        var maybeMatch = MatchDatabase.TryGet(matchId);
+        if (maybeMatch is not null) return maybeMatch;
+        
         var url =
             ApiHelper.GetRiotBaseUrlBasedOnRegion(region) +
             $"/lol/match/v5/matches/{matchId}" +
@@ -56,7 +61,7 @@ public sealed class MatchApiClient(ItemApiClient itemApiClient, RunesApiClient r
             matchDto.Info.Participants,
             GameModeToDisplayName(matchDto.Info.GameMode)
         );
-        _matchCache[matchId] = match;
+        MatchDatabase.TryAdd(matchId, match);
         return match;
     }
 

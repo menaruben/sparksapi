@@ -86,7 +86,7 @@ public sealed class ApiHelper
         var json = response.Content.ReadAsStringAsync().Result;
         var versions = JsonSerializer.Deserialize<List<string>>(json, JsonOptions);
         if (versions is null) throw new Exception("Failed to get versions");
-        return versions.First() ?? throw new Exception("Failed to get latest version");
+        return versions[0] ?? throw new Exception("Failed to get latest version");
     }
 
     public static Region ParseRegion(string region) => region.ToLower() switch

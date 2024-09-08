@@ -1,21 +1,22 @@
 ﻿using SparksApi.Api.Models;
-using System.Collections.Concurrent;
 using System.Text.Json;
+using SparksApi.Api.Caches;
 
 namespace SparksApi.Api.Handlers.Item;
 
 public sealed class ItemApiClient : IItemApiClient
 {
     private readonly HttpClient _client = new();
-    private readonly ConcurrentDictionary<int, Item> _itemCache = new();
+    private readonly ItemCache _itemDatabase;
     public static readonly int EmptyItemSlotId = 0;
 
-    public ItemApiClient() { LoadItems(); }
+    public ItemApiClient(ItemCache itemDatabase) {
+        _itemDatabase = itemDatabase;
+        LoadItems();
+    }
 
     public Item GetItem(int itemId) =>
-        _itemCache.TryGetValue(itemId, out var item)
-            ? item
-            : throw new Exception($"Item with id {itemId} not found");
+        _itemDatabase.TryGet(itemId) ?? throw new Exception($"Item with id {itemId} not found");
 
     private string GetItemIconUrl(int itemId) =>
         $"{ApiHelper.DdragonBaseUrl}/{ApiHelper.GetLatestVersion()}" +
@@ -30,14 +31,20 @@ public sealed class ItemApiClient : IItemApiClient
         if (items is null) throw new Exception("Could not load items");
         Parallel.ForEach(items, item =>
         {
-            _itemCache[item.Id] = new Item(
-                item.Id,
-                item.Name,
-                item.Description,
-                item.Categories,
-                GetItemIconUrl(item.Id),
-                item.PriceTotal
-            );
+            try
+            {
+                _itemDatabase.TryAdd(item.Id, new Item(
+                    item.Id,
+                    item.Name,
+                    item.Description,
+                    item.Categories,
+                    GetItemIconUrl(item.Id),
+                    item.PriceTotal
+                ));
+            } catch (Exception e)
+            {
+                throw new Exception($"Failed to load item {item.Id}", e);
+            }
         });
     }
 }
