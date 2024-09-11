@@ -11,7 +11,7 @@ public sealed class MatchApiClient(
     RunesApiClient runesApiClient,
     MatchCache matchDatabase,
     HttpClient httpClient
-    ) : IMatchApiClient 
+    ) : IMatchApiClient
 {
     private HttpClient Client => httpClient;
     private IItemApiClient ItemApiClient => itemApiClient;
@@ -38,7 +38,7 @@ public sealed class MatchApiClient(
 
         var response = await Client.GetAsync(url);
         var json = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<string[]>(json, ApiHelper.JsonOptions) 
+        return JsonSerializer.Deserialize<string[]>(json, ApiHelper.JsonOptions)
                ?? throw new Exception("Failed to deserialize match ids");
     }
 
@@ -47,7 +47,7 @@ public sealed class MatchApiClient(
         // if (_matchCache.TryGetValue(matchId, out var maybeMatch)) return maybeMatch;
         var maybeMatch = MatchDatabase.TryGet(matchId);
         if (maybeMatch is not null) return maybeMatch;
-        
+
         var url =
             ApiHelper.GetRiotBaseUrlBasedOnRegion(region) +
             $"/lol/match/v5/matches/{matchId}" +

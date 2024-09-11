@@ -13,7 +13,7 @@ public sealed class RuneAnalyzer : IAnalyzer<RuneTreeAnalytic>
         foreach (var champion in playedChampions)
         {
             var runeAnalyticForChamp = AnalyzeRunesForChampion(
-                participations.FilterByChampion(champion).ToArray(), 
+                participations.FilterByChampion(champion).ToArray(),
                 champion).ToArray();
 
             var runeTreeAnalytics = runeAnalyticForChamp

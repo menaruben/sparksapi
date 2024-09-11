@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SparksApi.Analyzer;
 using SparksApi.Analyzer.Item;
 using SparksApi.Api;
 using SparksApi.Api.Handlers.Match;

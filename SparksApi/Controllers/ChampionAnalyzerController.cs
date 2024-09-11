@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SparksApi.Analyzer;
 using SparksApi.Analyzer.Champion;
 using SparksApi.Api;
-using SparksApi.Api.Handlers.Item;
 using SparksApi.Api.Handlers.Match;
-using SparksApi.Api.Handlers.Runes;
 
 namespace SparksApi.Controllers;
 

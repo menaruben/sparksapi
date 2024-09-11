@@ -1,5 +1,5 @@
-﻿using SparksApi.Api.Models;
-using SparksApi.Api.Caches;
+﻿using SparksApi.Api.Caches;
+using SparksApi.Api.Models;
 using SparksApi.Extensions;
 
 namespace SparksApi.Api.Handlers.Runes;

@@ -1,14 +1,16 @@
-﻿using System.Collections.Frozen;
-using SparksApi.Api.Handlers.Runes;
+﻿using SparksApi.Api.Handlers.Runes;
+using System.Collections.Frozen;
 
 namespace SparksApi.Api.Caches;
 
-public class RuneCache : ICache<int, Rune> {
+public class RuneCache : ICache<int, Rune>
+{
     private readonly FrozenDictionary<int, Rune> _runesCache;
     private readonly string _baseIconUrl =
         "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/styles";
-    
-    public RuneCache() {
+
+    public RuneCache()
+    {
         // hardcoded because the actual API from riot, data dragon or community dragon is not what I needed
         _runesCache = new Dictionary<int, Rune>()
         {
@@ -212,7 +214,7 @@ public class RuneCache : ICache<int, Rune> {
                 $"{_baseIconUrl}/sorcery/unflinching/unflinching.png")},
         }.ToFrozenDictionary();
     }
-    
+
     public Rune? TryGet(int id) => _runesCache.TryGetValue(id, out var rune) ? rune : null;
     public bool TryAdd(int id, Rune rune) => false;         // not needed for this cache because it's immutable
 }

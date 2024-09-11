@@ -3,7 +3,8 @@ using System.Text.Json;
 
 namespace SparksApi.Api.Handlers.Summoner;
 
-public sealed class SummonerApiClient(HttpClient httpClient) : ISummonerApiClient {
+public sealed class SummonerApiClient(HttpClient httpClient) : ISummonerApiClient
+{
     private HttpClient Client => httpClient;
     private readonly string _profileIconBaseUrl = "/game/assets/ux/summonericons/profileicon";
 

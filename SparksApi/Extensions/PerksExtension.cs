@@ -4,7 +4,8 @@ using SparksApi.Api.Models;
 
 namespace SparksApi.Extensions;
 
-public static class PerksExtension {
+public static class PerksExtension
+{
     public static IEnumerable<Rune> ToRunes(this Perks perks, RuneCache runeCache) =>
         perks.Styles
             .SelectMany(style => style.Selections)

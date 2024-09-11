@@ -8,7 +8,7 @@ public sealed class AccountApiClient(HttpClient httpClient, ILogger<AccountApiCl
     private readonly ConcurrentDictionary<string, Account> _accountCache = new();
     private HttpClient Client => httpClient;
     private ILogger<AccountApiClient> Logger => logger;
-    
+
     public async Task<string> GetPuuid(string gameName, string tagLine, Region region)
     {
         var puuid = GetPuuidFromCache(gameName, tagLine, region);

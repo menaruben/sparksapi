@@ -1,8 +1,9 @@
-﻿using System.Collections.Concurrent;
-using SparksApi.Api.Caches;
+﻿using SparksApi.Api.Caches;
 using SparksApi.Api.Handlers.Match;
+using System.Collections.Concurrent;
 
-public class MatchCache : ICache<string, Match> {
+public class MatchCache : ICache<string, Match>
+{
     private readonly ConcurrentDictionary<string, Match> _matchCache = new();
 
     public Match? TryGet(string key) => _matchCache.TryGetValue(key, out var match) ? match : null;

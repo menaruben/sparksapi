@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using SparksApi.Api.Handlers.Match;
+﻿using SparksApi.Api.Handlers.Match;
 using SparksApi.Extensions;
 
 namespace SparksApi.Analyzer.Champion;

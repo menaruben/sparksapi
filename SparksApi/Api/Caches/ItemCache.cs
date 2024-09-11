@@ -1,26 +1,28 @@
-﻿using System.Collections.Concurrent;
-using System.Text.Json;
-using SparksApi.Api.Handlers.Item;
+﻿using SparksApi.Api.Handlers.Item;
 using SparksApi.Api.Models;
+using System.Collections.Concurrent;
+using System.Text.Json;
 
 namespace SparksApi.Api.Caches;
 
-public class ItemCache : ICache<int, Item> {
+public class ItemCache : ICache<int, Item>
+{
     private readonly ConcurrentDictionary<int, Item> _itemCache = new();
     private readonly HttpClient _client;
     private readonly ILogger<ItemCache> _logger;
 
-    public ItemCache(HttpClient httpClient, ILogger<ItemCache> logger) 
+    public ItemCache(HttpClient httpClient, ILogger<ItemCache> logger)
     {
         _client = httpClient;
         _logger = logger;
         LoadItems().Wait();
     }
-    
+
     public Item? TryGet(int id) => _itemCache.TryGetValue(id, out var item) ? item : null;
     public bool TryAdd(int id, Item item) => _itemCache.TryAdd(item.Id, item);
 
-    private async Task LoadItems() {
+    private async Task LoadItems()
+    {
         var url = $"{ApiHelper.CdragonBaseUrl}/plugins/rcp-be-lol-game-data/global/en_gb/v1/items.json";
         var response = await _client.GetAsync(url);
         response.EnsureSuccessStatusCode();
