@@ -15,11 +15,11 @@ public sealed class SummonerController(
     private SummonerApiClient SummonerApiClient => summonerApiClient;
 
     [HttpGet(Name = "GetSummoner")]
-    public Summoner GetSummoner(string puuid, string region)
+    public async Task<Summoner> GetSummoner(string puuid, string region)
     {
         var actualRegion = ApiHelper.ParseRegion(region);
         Logger.LogInformation($"Getting account for {puuid} in {actualRegion}");
-        var summoner = SummonerApiClient.GetSummoner(puuid, actualRegion);
+        var summoner = await SummonerApiClient.GetSummoner(puuid, actualRegion);
         Logger.LogInformation($"Account found: {summoner.Puuid}, {summoner.ProfileIconUrl}");
         return summoner;
     }

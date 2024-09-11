@@ -12,44 +12,45 @@ public sealed class MatchController(ILogger<MatchController> logger, MatchApiCli
     private IMatchApiClient MatchApiClient => matchApiClient;
 
     [HttpGet("matchIds", Name = "GetMatchIds")]
-    public IEnumerable<string> GetMatchIds(string puuid, string region, int matchCount = 10, int skip = 0)
+    public async Task<string[]> GetMatchIds(string puuid, string region, int matchCount = 10, int skip = 0)
     {
         var actualRegion = ApiHelper.ParseRegion(region);
         Logger.LogInformation($"Getting {matchCount} match ids for {puuid} in {actualRegion} starting from {skip}");
-        var matchIds = MatchApiClient.GetMatchIds(puuid, actualRegion, matchCount, skip).Result.ToArray();
+        var matchIds = await MatchApiClient.GetMatchIds(puuid, actualRegion, matchCount, skip);
         Logger.LogInformation($"Got following match ids: {string.Join(", ", matchIds)}");
         return matchIds;
     }
 
     [HttpGet("matchesFromPuuid", Name = "GetMatchesFromPuuid")]
-    public MatchCollection GetMatchesWithPuuid(string puuid, string region, int matchCount = 10, int skip = 0)
+    public async Task<Match[]> GetMatchesWithPuuid(string puuid, string region, int matchCount = 10, int skip = 0)
     {
         var actualRegion = ApiHelper.ParseRegion(region);
         Logger.LogInformation($"Getting {matchCount} matches for {puuid} in {actualRegion} starting from {skip}");
-        var matchIds = MatchApiClient.GetMatchIds(puuid, actualRegion, matchCount, skip).Result.ToArray();
+        var matchIds = await MatchApiClient.GetMatchIds(puuid, actualRegion, matchCount, skip);
         Logger.LogInformation($"Got following match ids: {string.Join(", ", matchIds)}");
-        var matches = MatchApiClient.GetMatchesFromIds(matchIds, actualRegion).Result;
+        var matches = await MatchApiClient.GetMatchesFromIds(matchIds, actualRegion);
         Logger.LogInformation("Got matches from ids successfully");
         return matches;
     }
 
     [HttpPost("matchesFromIds", Name = "GetMatchesFromIds")]
-    public MatchCollection GetMatchesFromIds([FromBody] IEnumerable<string> matchIds, string region)
+    public async Task<Match[]> GetMatchesFromIds([FromBody] string[] matchIds, string region)
     {
         var actualRegion = ApiHelper.ParseRegion(region);
         Logger.LogInformation($"Getting matches from {string.Join(", ", matchIds)} in {actualRegion}");
-        var matches = MatchApiClient.GetMatchesFromIds(matchIds, actualRegion).Result;
+        var matches = await MatchApiClient.GetMatchesFromIds(matchIds, actualRegion);
         Logger.LogInformation("Got matches from ids successfully");
         return matches;
     }
 
 
     [HttpGet("matchHistory", Name = "GetMatchHistory")]
-    public MatchHistory GetMatchHistory(string puuid, string region, int matchCount = 10, int skip = 0)
+    public async Task<MatchHistory> GetMatchHistory(string puuid, string region, int matchCount = 10, int skip = 0)
     {
         var actualRegion = ApiHelper.ParseRegion(region);
         Logger.LogInformation($"Getting match history ({matchCount} matches) for {puuid} in {actualRegion} starting from {skip}");
-        var matchHistory = MatchHistory.From(MatchApiClient.GetMatchParticipations(puuid, actualRegion, matchCount, skip).Result);
+        var participations = await MatchApiClient.GetMatchParticipations(puuid, actualRegion, matchCount, skip);
+        var matchHistory = MatchHistory.From(participations);
         Logger.LogInformation("Got match history successfully");
         return matchHistory;
     }

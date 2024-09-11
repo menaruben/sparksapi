@@ -2,5 +2,5 @@
 
 public interface ISummonerApiClient
 {
-    Summoner GetSummoner(string puuid, Region region);
+    Task<Summoner> GetSummoner(string puuid, Region region);
 }

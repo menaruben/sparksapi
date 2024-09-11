@@ -17,13 +17,13 @@ public sealed class RuneAnalyzerController(
 
 
     [HttpGet(Name = "GetRuneAnalytics")]
-    public AnalyticsCollection<RuneTreeAnalytic> Get(string puuid, string region, int matchCount = 10, int skip = 0)
+    public async Task<RuneTreeAnalytic[]> Get(string puuid, string region, int matchCount = 10, int skip = 0)
     {
         Logger.LogInformation($"Getting rune analytics for {puuid} in {region} with {matchCount} matches starting from {skip}");
         var actualRegion = ApiHelper.ParseRegion(region);
-        var participations = MatchApiClient.GetMatchParticipations(puuid, actualRegion, matchCount, skip);
+        var participations = await MatchApiClient.GetMatchParticipations(puuid, actualRegion, matchCount, skip);
         Logger.LogInformation("Got participations successfully");
-        var result = RuneAnalyzer.Analyze(participations.Result);
+        var result = RuneAnalyzer.Analyze(participations);
         Logger.LogInformation("Analyzed runes successfully");
         return result;
     }

@@ -22,14 +22,14 @@ public sealed class ChampionAnalyzerController(
 
 
     [HttpGet(Name = "GetChampionAnalytics")]
-    public AnalyticsCollection<ChampionAnalytic> Get(string puuid, string region, int matchCount = 10, int skip = 0)
+    public async Task<ChampionAnalytic[]> Get(string puuid, string region, int matchCount = 10, int skip = 0)
     {
         Logger.LogInformation($"Getting champion analytics for {puuid} in {region} with {matchCount} matches starting from {skip}");
         var actualRegion = ApiHelper.ParseRegion(region);
         Logger.LogInformation($"Getting {matchCount} matches for {puuid} in {actualRegion} starting from {skip}");
-        var participations = MatchApiClient.GetMatchParticipations(puuid, actualRegion, matchCount, skip);
+        var participations = await MatchApiClient.GetMatchParticipations(puuid, actualRegion, matchCount, skip);
         Logger.LogInformation("Got participations successfully from matches");
-        var result = ChampionAnalyzer.Analyze(participations.Result);
+        var result = ChampionAnalyzer.Analyze(participations);
         Logger.LogInformation("Got champion analytics successfully");
         return result;
     }

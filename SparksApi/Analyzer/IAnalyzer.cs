@@ -1,9 +1,8 @@
-﻿using Sparks.Analyzer;
-using SparksApi.Api.Handlers.Match;
+﻿using SparksApi.Api.Handlers.Match;
 
 namespace SparksApi.Analyzer;
 
-public interface IAnalyzer<T> where T : Analytic
+public interface IAnalyzer<T> where T : BaseAnalytic
 {
-    AnalyticsCollection<T> Analyze(IEnumerable<MatchParticipation> participation);
+    T[] Analyze(MatchParticipation[] participations);
 }

@@ -29,6 +29,7 @@ builder.Services.AddSingleton<ItemCache>();
 builder.Services.AddSingleton<RuneCache>();
 
 // handlers
+builder.Services.AddSingleton<HttpClient>();
 builder.Services.AddSingleton<ItemApiClient>();
 builder.Services.AddSingleton<MatchApiClient>();
 builder.Services.AddSingleton<RunesApiClient>();

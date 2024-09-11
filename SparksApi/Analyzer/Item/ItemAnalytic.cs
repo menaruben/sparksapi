@@ -1,6 +1,4 @@
-﻿using Sparks.Analyzer;
-
-namespace SparksApi.Analyzer.Item;
+﻿namespace SparksApi.Analyzer.Item;
 
 public sealed record ItemAnalytic(
     string ChampionName,
@@ -9,4 +7,4 @@ public sealed record ItemAnalytic(
     float WinRate,
     float PickRate,
     int TotalMatches
-) : Analytic(WinRate, PickRate, TotalMatches);
+) : BaseAnalytic(WinRate, PickRate, TotalMatches);

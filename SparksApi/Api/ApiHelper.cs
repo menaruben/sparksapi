@@ -10,26 +10,8 @@ public sealed class ApiHelper
     public static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
-        IgnoreReadOnlyFields = true
+        IgnoreReadOnlyFields = true,
     };
-
-    // public static async Task<T> MapResponse<T>(HttpResponseMessage response)
-    // {
-    //     if (response.IsSuccessStatusCode)
-    //     {
-    //         var json = await response.Content.ReadAsStringAsync();
-    //         var result = JsonSerializer.Deserialize<T>(json, Options);
-    //
-    //         if (result is null)
-    //         {
-    //             throw new Exception("Failed to deserialize response");
-    //         }
-    //
-    //         return result;
-    //     }
-    //
-    //     throw new Exception($"Failed to get response: {response.StatusCode}");
-    // }
 
     public static string GetApiKey() =>
         Environment.GetEnvironmentVariable("RIOT_API_KEY") ?? throw new Exception("API_KEY not found");

@@ -1,13 +1,14 @@
-﻿using SparksApi.Api.Handlers.Match;
+﻿using System.Collections.Immutable;
+using SparksApi.Api.Handlers.Match;
 using SparksApi.Extensions;
 
 namespace SparksApi.Analyzer.Champion;
 
 public sealed class ChampionAnalyzer : IAnalyzer<ChampionAnalytic>
 {
-    public AnalyticsCollection<ChampionAnalytic> Analyze(IEnumerable<MatchParticipation> participations)
+    public ChampionAnalytic[] Analyze(MatchParticipation[] participations)
     {
-        var playedChampions = participations.GetPlayedChampions().ToArray();
+        var playedChampions = participations.GetPlayedChampions();
 
         var championAnalytics = new List<ChampionAnalytic>();
         foreach (var champ in playedChampions)
@@ -25,6 +26,6 @@ public sealed class ChampionAnalyzer : IAnalyzer<ChampionAnalytic>
             ));
         }
 
-        return AnalyticsCollection<ChampionAnalytic>.From(championAnalytics);
+        return championAnalytics.ToArray();
     }
 }
