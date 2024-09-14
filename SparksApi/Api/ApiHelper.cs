@@ -10,26 +10,8 @@ public sealed class ApiHelper
     public static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
-        IgnoreReadOnlyFields = true
+        IgnoreReadOnlyFields = true,
     };
-
-    // public static async Task<T> MapResponse<T>(HttpResponseMessage response)
-    // {
-    //     if (response.IsSuccessStatusCode)
-    //     {
-    //         var json = await response.Content.ReadAsStringAsync();
-    //         var result = JsonSerializer.Deserialize<T>(json, Options);
-    //
-    //         if (result is null)
-    //         {
-    //             throw new Exception("Failed to deserialize response");
-    //         }
-    //
-    //         return result;
-    //     }
-    //
-    //     throw new Exception($"Failed to get response: {response.StatusCode}");
-    // }
 
     public static string GetApiKey() =>
         Environment.GetEnvironmentVariable("RIOT_API_KEY") ?? throw new Exception("API_KEY not found");
@@ -85,7 +67,8 @@ public sealed class ApiHelper
         var response = client.GetAsync(url).Result;
         var json = response.Content.ReadAsStringAsync().Result;
         var versions = JsonSerializer.Deserialize<List<string>>(json, JsonOptions);
-        return versions.First() ?? throw new Exception("Failed to get latest version");
+        if (versions is null) throw new Exception("Failed to get versions");
+        return versions[0] ?? throw new Exception("Failed to get latest version");
     }
 
     public static Region ParseRegion(string region) => region.ToLower() switch

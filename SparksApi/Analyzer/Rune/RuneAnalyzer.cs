@@ -5,29 +5,30 @@ namespace SparksApi.Analyzer.Rune;
 
 public sealed class RuneAnalyzer : IAnalyzer<RuneTreeAnalytic>
 {
-    public AnalyticsCollection<RuneTreeAnalytic> Analyze(IEnumerable<MatchParticipation> participation)
+    public RuneTreeAnalytic[] Analyze(MatchParticipation[] participations)
     {
-        var playedChampions = participation.GetPlayedChampions().ToArray();
+        var playedChampions = participations.GetPlayedChampions().ToArray();
         var runeAnalytics = new List<RuneTreeAnalytic>();
 
         foreach (var champion in playedChampions)
         {
-            var runeAnalyticForChamp = AnalyzeRunesForChampion(participation
-                .FilterByChampion(champion), champion).ToArray();
+            var runeAnalyticForChamp = AnalyzeRunesForChampion(
+                participations.FilterByChampion(champion).ToArray(),
+                champion).ToArray();
 
             var runeTreeAnalytics = runeAnalyticForChamp
                 .GroupBy(r => r.Rune.TreeName)
                 .SelectMany(tree => RuneTreeAnalyticsForChamp(
-                    tree, runeAnalyticForChamp, champion, participation));
+                    tree, runeAnalyticForChamp, champion, participations));
 
             runeAnalytics.AddRange(runeTreeAnalytics);
         }
 
-        return AnalyticsCollection<RuneTreeAnalytic>.From(runeAnalytics);
+        return runeAnalytics.ToArray();
     }
 
-    private IEnumerable<RuneTreeAnalytic> RuneTreeAnalyticsForChamp(IGrouping<string, RuneAnalytic> tree,
-        IEnumerable<RuneAnalytic> runeAnalyticsForChamp, string championName, IEnumerable<MatchParticipation> ps)
+    private RuneTreeAnalytic[] RuneTreeAnalyticsForChamp(IGrouping<string, RuneAnalytic> tree,
+        RuneAnalytic[] runeAnalyticsForChamp, string championName, MatchParticipation[] ps)
     {
         var treeNames = tree.Select(r => r.Rune.TreeName).Distinct().ToArray();
         return treeNames.Select(treeName =>
@@ -37,11 +38,11 @@ public sealed class RuneAnalyzer : IAnalyzer<RuneTreeAnalytic>
             var pickRate = (float)ps.CountMatchesPlayedWithTree(treeName) / ps.Count();
             var totalMatchesWithTree = runes.MaxBy(r => r.TotalMatches)!.TotalMatches;
             return new RuneTreeAnalytic(treeName, championName, winRate, pickRate, totalMatchesWithTree, runes);
-        });
+        }).ToArray();
     }
 
 
-    private IEnumerable<RuneAnalytic> AnalyzeRunesForChampion(IEnumerable<MatchParticipation> ps, string championName)
+    private RuneAnalytic[] AnalyzeRunesForChampion(MatchParticipation[] ps, string championName)
     {
         var gamesPlayedWithChamp = ps.FilterByChampion(championName).ToArray();
         var runes = gamesPlayedWithChamp.GetRunesUsed().ToArray();
@@ -58,6 +59,6 @@ public sealed class RuneAnalyzer : IAnalyzer<RuneTreeAnalytic>
             analytics.Add(new RuneAnalytic(rune, winRate, pickRate, gamesWithRuneAndChamp.Length));
         }
 
-        return analytics;
+        return analytics.ToArray();
     }
 }

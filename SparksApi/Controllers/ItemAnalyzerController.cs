@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SparksApi.Analyzer;
 using SparksApi.Analyzer.Item;
 using SparksApi.Api;
 using SparksApi.Api.Handlers.Match;
@@ -17,13 +16,13 @@ public sealed class ItemAnalyzerController(
     private ItemAnalyzer ItemAnalyzer => itemAnalyzer;
 
     [HttpGet(Name = "GetItemAnalytics")]
-    public AnalyticsCollection<ItemAnalytic> Get(string puuid, string region, int matchCount = 10, int skip = 0)
+    public async Task<ItemAnalytic[]> Get(string puuid, string region, int matchCount = 10, int skip = 0)
     {
         Logger.LogInformation($"Getting item analytics for {puuid} in {region} with {matchCount} matches starting from {skip}");
         var actualRegion = ApiHelper.ParseRegion(region);
-        var participations = MatchApiClient.GetMatchParticipations(puuid, actualRegion, matchCount, skip);
+        var participations = await MatchApiClient.GetMatchParticipations(puuid, actualRegion, matchCount, skip);
         Logger.LogInformation("Got participations successfully");
-        var result = ItemAnalyzer.Analyze(participations.Result);
+        var result = ItemAnalyzer.Analyze(participations);
         Logger.LogInformation("Got analytics successfully");
         return result;
     }

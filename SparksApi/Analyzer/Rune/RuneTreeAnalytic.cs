@@ -1,6 +1,4 @@
-﻿using Sparks.Analyzer;
-
-namespace SparksApi.Analyzer.Rune;
+﻿namespace SparksApi.Analyzer.Rune;
 
 public sealed record RuneTreeAnalytic(
     string TreeName,
@@ -9,4 +7,4 @@ public sealed record RuneTreeAnalytic(
     float PickRate,
     int TotalMatches,
     IEnumerable<RuneAnalytic> Runes
-) : Analytic(WinRate, PickRate, TotalMatches);
+) : BaseAnalytic(WinRate, PickRate, TotalMatches);

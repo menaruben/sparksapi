@@ -12,21 +12,21 @@ public sealed class AccountController(ILogger<AccountController> logger, Account
     private AccountApiClient AccountApi => accountApiClient;
 
     [HttpGet("accountFromRiotId", Name = "GetAccountFromRiotId")]
-    public Account GetAccountFromRiotId(string name, string tagline, string region)
+    public async Task<Account> GetAccountFromRiotId(string name, string tagline, string region)
     {
         var actualRegion = ApiHelper.ParseRegion(region);
         Logger.LogInformation($"Getting account for {name}#{tagline} in {actualRegion}");
-        var account = AccountApi.GetAccount(name, tagline, actualRegion).Result;
+        var account = await AccountApi.GetAccount(name, tagline, actualRegion);
         Logger.LogInformation($"Account found: {account.GameName}#{account.TagLine}, {account.Puuid}");
         return account;
     }
 
     [HttpGet("GetAccountFromPuuid", Name = "GetAccountFromPuuid")]
-    public Account GetAccountFromPuuid(string puuid, string region)
+    public async Task<Account> GetAccountFromPuuid(string puuid, string region)
     {
         var actualRegion = ApiHelper.ParseRegion(region);
         Logger.LogInformation($"Getting account for {puuid} in {actualRegion}");
-        var account = AccountApi.GetAccount(puuid, actualRegion).Result;
+        var account = await AccountApi.GetAccount(puuid, actualRegion);
         Logger.LogInformation($"Account found: {account.GameName}#{account.TagLine}, {account.Puuid}");
         return account;
     }

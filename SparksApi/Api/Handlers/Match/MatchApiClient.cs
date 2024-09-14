@@ -2,51 +2,58 @@
 using SparksApi.Api.Handlers.Runes;
 using SparksApi.Api.Models;
 using SparksApi.Extensions;
-using System.Collections.Concurrent;
 using System.Text.Json;
 
 namespace SparksApi.Api.Handlers.Match;
 
-public sealed class MatchApiClient(ItemApiClient itemApiClient, RunesApiClient runesApiClient) : IMatchApiClient
+public sealed class MatchApiClient(
+    ItemApiClient itemApiClient,
+    RunesApiClient runesApiClient,
+    MatchCache matchDatabase,
+    HttpClient httpClient
+    ) : IMatchApiClient
 {
-    private readonly HttpClient _client = new();
+    private HttpClient Client => httpClient;
     private IItemApiClient ItemApiClient => itemApiClient;
     private IRunesApiClient RunesApiClient => runesApiClient;
-    private readonly ConcurrentDictionary<string, Match> _matchCache = new();
+    private MatchCache MatchDatabase => matchDatabase;
 
-    public async Task<MatchCollection> GetMatchesFromIds(IEnumerable<String> matchIds, Region region) =>
-        MatchCollection.From(await Task.WhenAll(matchIds.Select(matchId => GetMatch(matchId, region))));
+    public async Task<Match[]> GetMatchesFromIds(IEnumerable<String> matchIds, Region region) =>
+        await Task.WhenAll(matchIds.Select(matchId => GetMatch(matchId, region)));
 
-    public async Task<IEnumerable<MatchParticipation>> GetMatchParticipations(
+    public async Task<MatchParticipation[]> GetMatchParticipations(
         string puuid, Region region, int count, int skip)
     {
         var matches = await GetMatchIds(puuid, region, count, skip);
         var matchCollection = await GetMatchesFromIds(matches, region);
-        return matchCollection.GetParticipations(puuid, ItemApiClient, RunesApiClient);
+        return matchCollection.GetParticipations(puuid, ItemApiClient, RunesApiClient).ToArray();
     }
 
-    public async Task<IEnumerable<String>> GetMatchIds(string puuid, Region region, int count, int skip)
+    public async Task<string[]> GetMatchIds(string puuid, Region region, int count, int skip)
     {
         var url =
             $"{ApiHelper.GetRiotBaseUrlBasedOnRegion(region)}" +
             $"/lol/match/v5/matches/by-puuid/{puuid}" +
             $"/ids?start={skip}&count={count}&api_key={ApiHelper.GetApiKey()}";
 
-        var response = await _client.GetAsync(url);
+        var response = await Client.GetAsync(url);
         var json = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<IEnumerable<String>>(json, ApiHelper.JsonOptions) ?? throw new Exception("Failed to deserialize match ids");
+        return JsonSerializer.Deserialize<string[]>(json, ApiHelper.JsonOptions)
+               ?? throw new Exception("Failed to deserialize match ids");
     }
 
     private async Task<Match> GetMatch(string matchId, Region region)
     {
-        if (_matchCache.TryGetValue(matchId, out var maybeMatch)) return maybeMatch;
+        // if (_matchCache.TryGetValue(matchId, out var maybeMatch)) return maybeMatch;
+        var maybeMatch = MatchDatabase.TryGet(matchId);
+        if (maybeMatch is not null) return maybeMatch;
 
         var url =
             ApiHelper.GetRiotBaseUrlBasedOnRegion(region) +
             $"/lol/match/v5/matches/{matchId}" +
             $"?api_key={ApiHelper.GetApiKey()}";
 
-        var response = await _client.GetAsync(url);
+        var response = await Client.GetAsync(url);
         var json = await response.Content.ReadAsStringAsync();
         var matchDto = JsonSerializer.Deserialize<MatchDto>(json, ApiHelper.JsonOptions);
         if (matchDto is null) throw new Exception("Failed to deserialize match");
@@ -56,7 +63,7 @@ public sealed class MatchApiClient(ItemApiClient itemApiClient, RunesApiClient r
             matchDto.Info.Participants,
             GameModeToDisplayName(matchDto.Info.GameMode)
         );
-        _matchCache[matchId] = match;
+        MatchDatabase.TryAdd(matchId, match);
         return match;
     }
 

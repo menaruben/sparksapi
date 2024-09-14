@@ -7,6 +7,6 @@ namespace SparksApi.Extensions;
 public static class MatchCollectionExtension
 {
     public static IEnumerable<MatchParticipation> GetParticipations(
-        this MatchCollection matches, string puuid, IItemApiClient itemApiClient, IRunesApiClient runesApiClient) =>
+        this IEnumerable<Match> matches, string puuid, IItemApiClient itemApiClient, IRunesApiClient runesApiClient) =>
         matches.Select(m => m.ToParticipation(puuid, itemApiClient, runesApiClient));
 }

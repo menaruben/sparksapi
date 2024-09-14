@@ -8,7 +8,7 @@ public sealed class ItemAnalyzer(ItemApiClient itemApiClient) : IAnalyzer<ItemAn
 {
     private ItemApiClient ItemApi => itemApiClient;
 
-    public AnalyticsCollection<ItemAnalytic> Analyze(IEnumerable<MatchParticipation> participations)
+    public ItemAnalytic[] Analyze(MatchParticipation[] participations)
     {
         var playedChampions = participations.GetPlayedChampions();
 
@@ -18,11 +18,10 @@ public sealed class ItemAnalyzer(ItemApiClient itemApiClient) : IAnalyzer<ItemAn
             var itemAnalyticsForChamp = AnalyzeItemsForChampion(participations, champion);
             itemAnalytics.AddRange(itemAnalyticsForChamp);
         }
-
-        return AnalyticsCollection<ItemAnalytic>.From(itemAnalytics);
+        return itemAnalytics.ToArray();
     }
 
-    private IEnumerable<ItemAnalytic> AnalyzeItemsForChampion(IEnumerable<MatchParticipation> ps, string championName)
+    private ItemAnalytic[] AnalyzeItemsForChampion(IEnumerable<MatchParticipation> ps, string championName)
     {
         var gamesPlayedWithChamp = ps.FilterByChampion(championName).ToArray();
         var items = gamesPlayedWithChamp.GetLegendaryItemsUsed();
@@ -39,7 +38,6 @@ public sealed class ItemAnalyzer(ItemApiClient itemApiClient) : IAnalyzer<ItemAn
             var itemName = ItemApi.GetItem(itemId).Name;
             analytics.Add(new ItemAnalytic(championName, itemName, itemId, winRate, pickRate, gamesWithItemAndChamp.Length));
         }
-
-        return analytics;
+        return analytics.ToArray();
     }
 }
